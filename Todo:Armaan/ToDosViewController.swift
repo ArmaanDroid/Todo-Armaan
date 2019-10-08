@@ -43,5 +43,32 @@ class ToDosViewController: UITableViewController {
 
     }
     
+    
+    
+    //MARK: Add new items
+    @IBAction func onAddNewitemClicked(_ sender: UIBarButtonItem) {
+        var mTextField = UITextField()
+        let alert = UIAlertController(title: "Add Item", message: "", preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "ADD", style: .default) { (action) in
+//            print("click working")
+            if mTextField.text?.isEmpty ?? false {
+            }else{
+                self.list.append(mTextField.text!)
+                self.tableView.reloadData()
+                
+            }
+        }
+        
+        alert.addTextField { (textField) in
+            textField.placeholder = "Please enter a item todo."
+            mTextField=textField
+        }
+        
+        alert.addAction(action)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
 }
 

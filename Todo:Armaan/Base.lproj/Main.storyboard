@@ -34,7 +34,14 @@
                             <outlet property="delegate" destination="hJp-Xi-nqr" id="Acz-4W-LeC"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="ToDo:Armaan" id="S28-al-cDR"/>
+                    <navigationItem key="navigationItem" title="ToDo:Armaan" id="S28-al-cDR">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="w0s-vn-nkc">
+                            <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <connections>
+                                <action selector="onAddNewitemClicked:" destination="hJp-Xi-nqr" id="e9X-wq-A7A"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1jd-dV-vgK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
