@@ -9,11 +9,16 @@
 import UIKit
 
 class ToDosViewController: UITableViewController {
-
-    var list = ["Harish","Amit","Armaan"]
+    let KEY_LIST = "todo_list"
+    let userDefaults = UserDefaults.init()
+    
+    var list = [String]()
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        if let stringList = userDefaults.array(forKey: KEY_LIST) as? [String]{
+            list=stringList
+        }
     }
 
     //MARK: TableViewController Data Source method
@@ -56,7 +61,7 @@ class ToDosViewController: UITableViewController {
             }else{
                 self.list.append(mTextField.text!)
                 self.tableView.reloadData()
-                
+                self.userDefaults.set(self.list, forKey: self.KEY_LIST)
             }
         }
         
