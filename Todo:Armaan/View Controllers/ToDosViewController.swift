@@ -11,41 +11,45 @@ import UIKit
 class ToDosViewController: UITableViewController {
     let KEY_LIST = "todo_list"
     let userDefaults = UserDefaults.init()
+    let pListAddress = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("Todo.plist")
     
-    var list = [String]()
+    var list = [ToDoItem]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        if let stringList = userDefaults.array(forKey: KEY_LIST) as? [String]{
-            list=stringList
-        }
+        loadData()
+        
+        print(pListAddress)
     }
-
+    
     //MARK: TableViewController Data Source method
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-      return  list.count
+        return  list.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TodoCell",for: indexPath)
-        cell.textLabel?.text = list[indexPath.row]
+        let currentTodo = list[indexPath.row]
+        cell.textLabel?.text = currentTodo.task
+        cell.accessoryType = currentTodo.completed ? .checkmark : .none
         
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark{
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        }else{
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
-        tableView.deselectRow(at: indexPath, animated: true)
+        tableView.cellForRow(at: indexPath)?.accessoryType = tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark ? .none : .checkmark
+       
+        list[indexPath.row].completed = !list[indexPath.row].completed
+        
+        updateList()
 
+        tableView.deselectRow(at: indexPath, animated: true)
+        
     }
     
     
@@ -56,12 +60,12 @@ class ToDosViewController: UITableViewController {
         let alert = UIAlertController(title: "Add Item", message: "", preferredStyle: .alert)
         
         let action = UIAlertAction(title: "ADD", style: .default) { (action) in
-//            print("click working")
-            if mTextField.text?.isEmpty ?? false {
-            }else{
-                self.list.append(mTextField.text!)
+            if let task = mTextField.text {
+                let todo = ToDoItem.init()
+                todo.task = task
+                self.list.append(todo)
+                self.updateList()
                 self.tableView.reloadData()
-                self.userDefaults.set(self.list, forKey: self.KEY_LIST)
             }
         }
         
@@ -75,5 +79,26 @@ class ToDosViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    func updateList(){
+        let encoder = PropertyListEncoder()
+        do{
+            let data = try encoder.encode(list)
+            try data.write(to: pListAddress)
+        }catch{
+            print("error saving data in plist \(error)")
+        }
+    }
+    
+    func loadData(){
+        if let data = try? Data(contentsOf: pListAddress){
+            let decoder = PropertyListDecoder()
+            do{
+               list = try decoder.decode([ToDoItem].self, from: data)
+            }catch{
+                print("error loading data from the plist /(error)")
+            }
+        }
+        
+    }
 }
 
